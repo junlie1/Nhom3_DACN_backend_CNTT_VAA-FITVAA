@@ -27,7 +27,7 @@ app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(express.json());
 app.use(cors({
     origin: ['http://localhost:8008', 'http://192.168.99.239:8008', 'http://42.113.117.188:8008', 'http://democode.ddns.net:8008'], // URL của frontend React
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH' ,'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'token'],
     credentials: true,
     exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar']
