@@ -69,7 +69,7 @@ authRouter.post("/api/signin", async (req,res)=> {
     }
 });
 
-//Update địa điểm User
+//Update địa điểm User app
     authRouter.put("/api/users/:id", async (req,res) => {
         try {
             const {id} = req.params;
@@ -91,6 +91,60 @@ authRouter.post("/api/signin", async (req,res)=> {
         } catch (error) {
             return res.status(500).json({error: error.message});
         }
+    });
+
+    //Update địa điểm User web
+    authRouter.patch("/api/users-web/:id", async (req,res) => {
+        try {
+            const {id} = req.params;
+            const {fullName,city, locality, phoneNumber} = req.body;
+            //Tìm và update city, locality của user
+            //{new: true} chắc chắn rằng update sẽ đc thay đổi
+            const updatedUser = await User.findByIdAndUpdate(
+                id,
+                {fullName, city,locality,phoneNumber},
+                {new: true}
+            );
+            if(!updatedUser) {
+                res.status(404).json({
+                    error: "Không tìm thấy user"
+                })
+            }
+            return res.status(200).json(updatedUser);
+
+        } catch (error) {
+            return res.status(500).json({error: error.message});
+        }
+    });
+
+    authRouter.post('/api/user/log-out', async (req,res) => {
+        try {
+            res.clearCookie('token');
+            return res.status(200).json({
+                status: 'Ok',
+                message: 'Đăng xuất thành công'
+            });
+        } catch (error) {
+            
+        }
+    });
+
+    authRouter.get('/api/get-user/:userId', async (req,res) => {
+        try {
+            const {userId} = req.params;
+            const user = await User.findById(userId);        
+            if(!user) {
+                res.status(404).json({
+                    message: "Không tìm thấy user"
+                });
+            }
+            res.status(200).json(user);
+        } catch (error) {
+            
+        }
     })
+    
+
+
 
 module.exports = authRouter;

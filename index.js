@@ -10,7 +10,7 @@ const productReviewRouter = require('./routes/product_review');
 const vendorRouter = require('./routes/vendor');
 const orderRouter = require('./routes/order');
 const cartRouter = require('./routes/cart');
-const momoRouter = require('./routes/momo');
+const paymentRouter = require('./routes/payment');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 
@@ -20,9 +20,16 @@ const app = express();
 const mongo = mongoose.connect('mongodb://127.0.0.1:27017/nhom3_dacn_db');
 /* ---------------------------------------------------------------------------------- */
 //Sdung routes
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "10mb" })); // 10mb là ví dụ
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000', // URL của frontend React
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'token'],
+    credentials: true,
+    exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar']
+}));
 app.use(authRouter);
 app.use(bannerRouter);
 app.use(categoryBanner);
@@ -32,7 +39,7 @@ app.use(productReviewRouter);
 app.use(vendorRouter);
 app.use(orderRouter);
 app.use(cartRouter);
-app.use(momoRouter);
+app.use(paymentRouter);
 
 /* ---------------------------------------------------------------------------------- */
 

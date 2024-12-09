@@ -5,7 +5,7 @@ const orderRouter = express.Router();
 
 orderRouter.post("/api/orders", async (req,res) => {
     try {
-        const {fullName, email, city, locality, phoneNumber,productId,productName, productPrice, quantity,category,image, vendorId, buyerId, paymentStatus,paymentIntentId,paymentMethod} = req.body;
+        const {fullName, email, city, locality, phoneNumber,productId,productName, productPrice, quantity,category,image, vendorId, buyerId, paymentStatus,paymentIntentId,paymentMethod, isPaid} = req.body;
         const createdAt = new Date().getMilliseconds();
         const order = new Order({
             fullName, 
@@ -24,7 +24,8 @@ orderRouter.post("/api/orders", async (req,res) => {
             paymentStatus,
             paymentIntentId,
             paymentMethod,
-            createdAt
+            createdAt,
+            isPaid
         });
         await order.save();
         return res.status(201).json(order);
@@ -60,46 +61,6 @@ orderRouter.get('/api/payment-intent/:id', async (req,res) => {
     }
 });
 
-// try {
-//     const {orderId,paymentMethodId, currency = 'usd', amount} = req.body;
-//     if(!orderId || !paymentMethodId || !currency || !amount) {
-//         return res.status(400).json({
-//             message: "Nhập thiếu cột"
-//         });
-//     }
-//     const order = await Order.findById(orderId);
-//     if(!order) {
-//         return res.status(404).json({
-//             message: "Không tìm thấy order"
-//         });
-//     }
-//     const totalAmounts = order.productPrice * order.quantity;
-//     const minimumAmount = 0.50;
-//     if(totalAmounts < minimumAmount) {
-//         return res.status(400).json({
-//             message: "Số tiền tối thiểu là 0.5$"
-//         });
-//     }
-//     const amountInCents = Math.round(totalAmounts * 100);
-//     const paymentIntent = await stripe.paymentIntents.create({
-//         amount: amountInCents,
-//         currency: currency,
-//         payment_method: paymentMethodId,
-//         automatic_payment_methods: {enabled: true}
-//     });
-//     console.log('paymentIntent',paymentIntent);
-    
-//     return res.json({
-//         status: "success",
-//         paymentIntentId: paymentIntent.id,
-//         amount: paymentIntent.amount / 100,
-//         currency: paymentIntent.currency
-//     });
-// } catch (error) {
-//     res.status(500).json({
-//         Lỗi: error.message
-//     });
-// }
 
 //Get order by buyerId
 orderRouter.get('/api/orders/:buyerId', async (req,res) => {
@@ -117,7 +78,7 @@ orderRouter.get('/api/orders/:buyerId', async (req,res) => {
     } catch (error) {
         console.error("Error", error);
     }
-})
+});
 
 //Delete order by id
 orderRouter.delete('/api/delete-order/:id', async (req, res) => {

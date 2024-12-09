@@ -41,4 +41,52 @@ subCategoryRouter.get("/api/category/:categoryName/subcategories", async (req,re
     }
 });
 
+subCategoryRouter.delete("/api/subcategories/delete-subcategories/:subcategoryId", async (req,res) => {
+    try {
+        const {subcategoryId} = req.params;
+        const product = await SubCategory.findByIdAndDelete(subcategoryId);
+        if(!product) {
+            res.status(404).json({
+                message: "Không tìm thấy subcategory để xóa"
+            });
+        }
+        res.status(200).json({
+            message: "Xóa thành công sản phẩm",
+            data: product
+        });
+    } catch (error) {
+        
+    }
+});
+
+subCategoryRouter.put("/api/subcategory/update/:subcategoryId", async (req, res) => {
+    try {
+        const { subcategoryId } = req.params;
+        const updateData = req.body;
+
+        // Kiểm tra và cập nhật subcategory
+        const updatedSubcategory = await SubCategory.findByIdAndUpdate(
+            subcategoryId,
+            updateData,
+            { new: true } // Trả về document đã được cập nhật
+        );
+
+        if (!updatedSubcategory) {
+            return res.status(404).json({
+                message: "Không tìm thấy subcategory để cập nhật"
+            });
+        }
+
+        res.status(200).json({
+            message: "Cập nhật thành công subcategory",
+            data: updatedSubcategory
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: "Đã xảy ra lỗi trong quá trình cập nhật",
+            error: error.message
+        });
+    }
+});
+
 module.exports = subCategoryRouter;
