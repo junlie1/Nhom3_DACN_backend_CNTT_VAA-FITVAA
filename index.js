@@ -17,7 +17,9 @@ const bodyParser = require('body-parser');
 const PORT = process.env.PORT || 8080;
 const app = express();
 
-const mongo = mongoose.connect('mongodb://127.0.0.1:27017/nhom3_dacn_db');
+mongoose.connect('mongodb+srv://letrung:trung2432004@cluster0.r6qbf.mongodb.net/nhom3_dacn_db')
+    .then(() => console.log("Conneect thành công"))
+    .catch(err => console.log("Connect error",err))
 /* ---------------------------------------------------------------------------------- */
 //Sdung routes
 app.use(bodyParser.json({ limit: "10mb" })); // 10mb là ví dụ
