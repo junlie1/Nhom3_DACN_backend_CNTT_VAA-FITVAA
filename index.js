@@ -26,7 +26,7 @@ app.use(bodyParser.json({ limit: "10mb" })); // 10mb là ví dụ
 app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
 app.use(express.json());
 app.use(cors({
-    origin: 'http://localhost:3000', // URL của frontend React
+    origin: ['http://localhost:8008', 'http://192.168.99.239', 'http://58.187.120.142', 'http://democode.ddns.net'], // URL của frontend React
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'token'],
     credentials: true,
