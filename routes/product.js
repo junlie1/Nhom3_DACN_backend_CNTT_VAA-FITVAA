@@ -247,7 +247,16 @@ productRouter.get('/api/search-products',async(req,res)=>{
       }
   
       const products = await Product.find({
-        productName: { $regex: term, $options: "i" }, // Tìm kiếm không phân biệt hoa thường
+        $or:[
+          //Regex will match any productName containing the query String, 
+          //For example , if the user  search for "apple ", the regex will check
+          //if "apple " is part  of any productName , so product  name "Green Apple pie",
+          //or "Fresh Apples" , would all match  because they contain  the world "apple"
+          {productName: {$regex:term, $options:'i'}},
+          {description: {$regex:term, $options:'i'}},
+          {normalizedProductName: {$regex:term, $options:'i'}},
+          {normalizedProductName: {$regex:term, $options:'i'}},
+         ]
       });
   
       res.status(200).json({ products });
