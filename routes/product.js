@@ -130,6 +130,41 @@ productRouter.get('/api/products-by-category/:category', async (req, res) => {
     }
   });
 
+  productRouter.get('/api/products-by-category/web/:category', async (req, res) => {
+    try {
+      const { category } = req.params;
+      const { page = 1, limit = 25 } = req.query; // Mặc định 25 sản phẩm trên mỗi trang
+  
+      // Tìm sản phẩm theo category và áp dụng phân trang
+      const products = await Product.find({ category, popular: true })
+        .skip((page - 1) * limit) // Bỏ qua sản phẩm của các trang trước
+        .limit(parseInt(limit)); // Giới hạn số lượng sản phẩm lấy
+  
+      // Tổng số sản phẩm
+      const totalProducts = await Product.countDocuments({ category, popular: true });
+      const totalPages = Math.ceil(totalProducts / limit);
+  
+      if (products.length === 0) {
+        return res.status(404).json({
+          msg: `No products found in the "${category}" category.`,
+          totalProducts: 0,
+          totalPages: 0,
+          currentPage: parseInt(page),
+        });
+      }
+  
+      // Trả về dữ liệu
+      return res.status(200).json({
+        products,
+        totalProducts,
+        totalPages,
+        currentPage: parseInt(page),
+      });
+    } catch (e) {
+      res.status(500).json({ error: e.message });
+    }
+  });
+
   productRouter.get('/api/products-by-subcategory/:subCategory', async (req, res) => {
     try {
       const { subCategory } = req.params;      
@@ -168,7 +203,7 @@ productRouter.get("/api/product/:id", async (req,res) => {
     }
     
 });
-
+//App
 productRouter.get('/api/search-products',async(req,res)=>{
     try {
       const {query} = req.query;
@@ -200,6 +235,24 @@ productRouter.get('/api/search-products',async(req,res)=>{
      return res.status(200).json(products);
     } catch (e) {
       return res.status(500).json({error:e.message})
+    }
+  });
+
+  //Web
+  productRouter.get("/api/search", async (req, res) => {
+    try {
+      const { term } = req.query;
+      if (!term) {
+        return res.status(400).json({ message: "Search term is required" });
+      }
+  
+      const products = await Product.find({
+        productName: { $regex: term, $options: "i" }, // Tìm kiếm không phân biệt hoa thường
+      });
+  
+      res.status(200).json({ products });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
     }
   });
 
