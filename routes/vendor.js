@@ -64,6 +64,18 @@ vendorRouter.post("/api/vendor/signin", async (req,res)=> {
             error: error.message
         })
     }
-})
+});
+
+//Get all vendor
+vendorRouter.get('/api/get-all-vendor', async (req,res) => {
+    try {
+        const vendors = await Vendor.find();
+        res.status(200).json(vendors);
+    } catch (error) {
+        res.status(500).json({
+            error: error.message
+        })
+    }
+});
 
 module.exports = vendorRouter;

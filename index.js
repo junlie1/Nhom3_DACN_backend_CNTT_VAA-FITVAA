@@ -22,6 +22,9 @@ mongoose.connect('mongodb+srv://letrung:trung2432004@cluster0.r6qbf.mongodb.net/
     .catch(err => console.log("Connect error",err))
 /* ---------------------------------------------------------------------------------- */
 //Sdung routes
+app.use(bodyParser.json({ limit: "10mb" })); // 10mb là ví dụ
+app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
+app.use(express.json());
 app.use(cors({
     origin: ['http://localhost:3000','http://localhost:8008','http://localhost:8080','http://localhost:55986', 'http://192.168.99.239:8008', 'http://42.113.117.188:8008', 'http://democode.ddns.net:8008','http://democode.ddns.net:8008/', 'https://junwoan-clothes.vercel.app'], // URL của frontend React
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH' ,'OPTIONS'],
@@ -29,11 +32,6 @@ app.use(cors({
     credentials: true,
     exposedHeaders: ['Content-Length', 'X-Foo', 'X-Bar']
 }));
-
-app.use(bodyParser.json({ limit: "10mb" })); // 10mb là ví dụ
-app.use(bodyParser.urlencoded({ limit: "10mb", extended: true }));
-app.use(express.json());
-
 app.use(authRouter);
 app.use(bannerRouter);
 app.use(categoryBanner);

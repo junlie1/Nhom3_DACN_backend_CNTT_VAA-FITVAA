@@ -26,4 +26,34 @@ categoryRouter.get("/api/categories", async (req,res) => {
     }
 });
 
+categoryRouter.delete("/api/categories/:categoryId", async (req,res) => {
+    try {
+        const {categoryId} = req.params;
+        const categories =  await Category.findByIdAndDelete(categoryId);
+        return res.status(200).json(categories)
+    } catch (error) {
+            res.status(500).json({
+                error: error.message
+            });
+    }
+});
+
+
+categoryRouter.put("/api/categories/:categoryId", async (req,res) => {
+    try {
+        const {categoryId} = req.params;
+        const updatedData = req.body;
+        const categories =  await Category.findByIdAndUpdate(
+            categoryId,
+            updatedData,
+            {new: true}
+        );
+        return res.status(200).json(categories)
+    } catch (error) {
+            res.status(500).json({
+                error: error.message
+            });
+    }
+});
+
 module.exports = categoryRouter;

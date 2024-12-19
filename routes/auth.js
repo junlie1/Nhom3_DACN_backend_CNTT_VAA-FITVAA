@@ -125,7 +125,7 @@ authRouter.post("/api/signin", async (req,res)=> {
                 message: 'Đăng xuất thành công'
             });
         } catch (error) {
-            
+            return res.status(500).json({error: error.message});
         }
     });
 
@@ -140,11 +140,57 @@ authRouter.post("/api/signin", async (req,res)=> {
             }
             res.status(200).json(user);
         } catch (error) {
-            
+            return res.status(500).json({error: error.message});
         }
-    })
-    
+    });
 
+//Check email có tồn tại để update mật khẩu
+authRouter.post('/api/check-email', async (req,res) => {
+    const {email} = req.body;
+    if (!email || !/\S+@\S+\.\S+/.test(email)) {
+        return res.status(400).json({ message: "Email không hợp lệ" });
+    }
+    try {
+        const user = await User.findOne({email});
+        if(!user) {
+            return res.status(404).json({
+                message: "Không tìm thấy tài khoản"
+            })
+        }
+        return res.status(200).json(user)
+    } catch (error) {
+        return res.status(500).json({error: error.message});
+    }
+});
+    
+//Đổi mật khẩu
+authRouter.post('/api/update/:userId', async (req,res) => {
+    try {
+        const {userId} = req.params;
+        const {currentPassword, newPassword} = req.body;
+        const user = await User.findById(userId);
+        if(!user) {
+            return res.status(404).json({
+                message: "Không tìm thấy user"
+            });
+        }
+        const isMatch = await bcrypt.compare(currentPassword,user.password);
+        if(!isMatch) {
+            return res.status(400).json({
+                message: "Sai mật khẩu hiện tại"
+            }); 
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hashNewPassword = await bcrypt.hash(newPassword,salt);
+        user.password = hashNewPassword;
+        await user.save();
+        return res.status(200).json({
+            message: "Update thành công"
+        })
+    } catch (error) {
+        return res.status(500).json({error: error.message});
+    }
+})
 
 
 module.exports = authRouter;
